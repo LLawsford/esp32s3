@@ -60,23 +60,34 @@ fn main() {
     let mut up = true;
     loop {
         //pulse green
-        std::thread::sleep(std::time::Duration::from_millis(60));
-        ws2812.set_pixel(RGB8::new(0, brightness, 0));
-
-        if brightness < 31 && up {
-            brightness += 1;
-        }
-
-        if brightness == 30 && up {
-            up = false;
-        }
-
-        if brightness > 0 && !up {
-            brightness -= 1;
-        }
-
-        if brightness == 0 && !up {
-            up = true;
-        }
+        std::thread::sleep(std::time::Duration::from_millis(40));
+        (brightness, up) = pulse_green(&mut ws2812, 20, up, brightness);
     }
+}
+
+fn pulse_green(
+    led: &mut WS2812RMT,
+    max_brightness: u8,
+    mut up: bool,
+    mut brightness: u8,
+) -> (u8, bool) {
+    if brightness < max_brightness && up {
+        brightness += 1;
+    }
+
+    if brightness == max_brightness && up {
+        up = false;
+    }
+
+    if brightness > 0 && !up {
+        brightness -= 1;
+    }
+
+    if brightness == 0 && !up {
+        up = true;
+    }
+
+    led.set_pixel(RGB8::new(0, brightness, 0));
+
+    (brightness, up)
 }
